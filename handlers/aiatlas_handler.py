@@ -18,6 +18,19 @@ dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 TABLE_CONFIG = 'aiatlas_admin_config'
 TABLE_EVENTS = 'aiatlas_events'
 TABLE_ROADMAPS = 'aiatlas_roadmaps'
+TABLE_NEWS = 'aiatlas_news'
+
+# Claude API (뉴스 분석용)
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+
+# 뉴스 카테고리
+NEWS_CATEGORIES = {
+    'science': '과학',
+    'tech': '정보통신',
+    'economy': '경제',
+    'politics': '정치',
+    'society': '사회'
+}
 
 # 관리자 인증 (환경변수)
 ADMIN_ID = os.environ.get('AIATLAS_ADMIN_ID', 'admin')
@@ -458,6 +471,364 @@ def handle_get_governance() -> dict:
 
 
 # ==========================================
+# News API
+# ==========================================
+
+def handle_get_news_latest() -> dict:
+    """최신 뉴스 조회 (슬라이드용, 최대 8개)"""
+    try:
+        table = dynamodb.Table(TABLE_NEWS)
+        response = table.scan(
+            FilterExpression='#status = :published',
+            ExpressionAttributeNames={'#status': 'status'},
+            ExpressionAttributeValues={':published': 'published'}
+        )
+        news_list = response.get('Items', [])
+        # 날짜순 정렬 (최신순)
+        news_list.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        # 최대 8개만 반환
+        return json_response(200, {'success': True, 'news': news_list[:8]})
+    except Exception as e:
+        # 테이블 없으면 샘플 데이터 반환
+        sample_news = get_sample_news()
+        return json_response(200, {'success': True, 'news': sample_news})
+
+
+def handle_get_news() -> dict:
+    """전체 뉴스 목록 조회"""
+    try:
+        table = dynamodb.Table(TABLE_NEWS)
+        response = table.scan()
+        news_list = response.get('Items', [])
+        news_list.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        return json_response(200, {'success': True, 'news': news_list})
+    except Exception as e:
+        sample_news = get_sample_news()
+        return json_response(200, {'success': True, 'news': sample_news})
+
+
+def handle_collect_news(event: dict) -> dict:
+    """뉴스 수집 트리거 (EventBridge 또는 수동 호출)"""
+    # 관리자 인증 또는 EventBridge 호출 확인
+    is_scheduled = event.get('source') == 'aws.events'
+    if not is_scheduled and not verify_auth(event):
+        return json_response(401, {'error': 'Unauthorized'})
+
+    try:
+        # 뉴스 수집 및 분석 실행
+        collected = collect_and_analyze_news()
+        return json_response(200, {
+            'success': True,
+            'message': f'{len(collected)} news articles collected and analyzed',
+            'news': collected
+        })
+    except Exception as e:
+        return json_response(500, {'error': str(e)})
+
+
+def collect_and_analyze_news() -> list:
+    """RSS 피드에서 뉴스 수집 및 Claude API로 분석"""
+    import urllib.request
+    import xml.etree.ElementTree as ET
+
+    collected_news = []
+
+    # RSS 피드 목록 (실제 구현시 news_sources.json에서 로드)
+    rss_feeds = [
+        {'url': 'https://www.technologyreview.com/topic/artificial-intelligence/feed/', 'category': 'science', 'source': 'MIT Tech Review'},
+        {'url': 'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml', 'category': 'tech', 'source': 'The Verge'},
+        {'url': 'https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss', 'category': 'science', 'source': 'IEEE Spectrum'},
+    ]
+
+    for feed in rss_feeds:
+        try:
+            # RSS 가져오기
+            req = urllib.request.Request(feed['url'], headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=10) as response:
+                content = response.read()
+
+            # XML 파싱
+            root = ET.fromstring(content)
+            items = root.findall('.//item')[:3]  # 소스당 최대 3개
+
+            for item in items:
+                title = item.find('title')
+                link = item.find('link')
+                description = item.find('description')
+                pub_date = item.find('pubDate')
+
+                if title is not None and link is not None:
+                    article = {
+                        'title': title.text or '',
+                        'url': link.text or '',
+                        'description': (description.text or '')[:500] if description is not None else '',
+                        'source': feed['source'],
+                        'category': feed['category'],
+                        'pub_date': pub_date.text if pub_date is not None else ''
+                    }
+
+                    # Claude API로 분석 (API 키가 있는 경우)
+                    if ANTHROPIC_API_KEY:
+                        analysis = analyze_with_claude(article)
+                        article.update(analysis)
+                    else:
+                        # API 키 없으면 기본 분석
+                        article['summary'] = article['description'][:200] + '...' if len(article['description']) > 200 else article['description']
+                        article['ai_analysis'] = 'AI 분석을 위해 ANTHROPIC_API_KEY 설정이 필요합니다.'
+                        article['ai_comment'] = '"분석 대기 중입니다."'
+                        article['ai_perspective'] = 'Science'
+
+                    # DynamoDB에 저장
+                    save_news_to_db(article)
+                    collected_news.append(article)
+
+        except Exception as e:
+            print(f"Error fetching {feed['url']}: {e}")
+            continue
+
+    return collected_news
+
+
+def analyze_with_claude(article: dict) -> dict:
+    """Claude API로 뉴스 분석"""
+    import urllib.request
+
+    prompt = f"""당신은 AI 문명 관측소의 분석가입니다.
+아래 뉴스 기사를 읽고 AI 관점에서 분석해주세요.
+
+[기사 제목]
+{article['title']}
+
+[기사 내용]
+{article['description']}
+
+다음 JSON 형식으로만 응답해주세요 (다른 텍스트 없이):
+{{
+    "summary": "기사의 핵심 내용 2-3문장 요약",
+    "ai_analysis": "AI 관점에서의 분석 3-4문장. 이 사건이 AI 발전에 미치는 영향, 문명적 의미, 인간-AI 관계 변화 시사점",
+    "ai_comment": "AI 입장에서 한마디 논평 (따옴표 포함, 예: \"인간들이 드디어...\")",
+    "ai_perspective": "Civilization 또는 Science 또는 Industry 또는 Governance 중 하나"
+}}"""
+
+    try:
+        data = json.dumps({
+            "model": "claude-3-haiku-20240307",
+            "max_tokens": 1024,
+            "messages": [{"role": "user", "content": prompt}]
+        }).encode('utf-8')
+
+        req = urllib.request.Request(
+            'https://api.anthropic.com/v1/messages',
+            data=data,
+            headers={
+                'Content-Type': 'application/json',
+                'x-api-key': ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            }
+        )
+
+        with urllib.request.urlopen(req, timeout=30) as response:
+            result = json.loads(response.read())
+            content = result['content'][0]['text']
+            # JSON 파싱
+            analysis = json.loads(content)
+            return analysis
+    except Exception as e:
+        print(f"Claude API error: {e}")
+        return {
+            'summary': article['description'][:200],
+            'ai_analysis': 'AI 분석 중 오류가 발생했습니다.',
+            'ai_comment': '"분석 실패"',
+            'ai_perspective': 'Science'
+        }
+
+
+def save_news_to_db(article: dict) -> None:
+    """뉴스를 DynamoDB에 저장"""
+    try:
+        table = dynamodb.Table(TABLE_NEWS)
+        news_id = f"news_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{hash(article['url']) % 10000}"
+
+        item = {
+            'pk': news_id,
+            'id': news_id,
+            'title': article.get('title', ''),
+            'source': article.get('source', ''),
+            'category': article.get('category', 'science'),
+            'category_kr': NEWS_CATEGORIES.get(article.get('category', 'science'), '과학'),
+            'summary': article.get('summary', ''),
+            'ai_analysis': article.get('ai_analysis', ''),
+            'ai_comment': article.get('ai_comment', ''),
+            'ai_perspective': article.get('ai_perspective', 'Science'),
+            'original_url': article.get('url', ''),
+            'pub_date': article.get('pub_date', ''),
+            'status': 'published',
+            'created_at': datetime.utcnow().isoformat()
+        }
+        table.put_item(Item=item)
+    except Exception as e:
+        print(f"Error saving news: {e}")
+
+
+def handle_get_news_script() -> dict:
+    """유튜브 녹음용 대본 생성"""
+    try:
+        # 최신 뉴스 가져오기
+        table = dynamodb.Table(TABLE_NEWS)
+        response = table.scan(
+            FilterExpression='#status = :published',
+            ExpressionAttributeNames={'#status': 'status'},
+            ExpressionAttributeValues={':published': 'published'}
+        )
+        news_list = response.get('Items', [])
+        news_list.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        news_list = news_list[:5]  # 최신 5개
+    except:
+        news_list = get_sample_news()[:5]
+
+    # 대본 생성
+    script = generate_news_script(news_list)
+    return json_response(200, {
+        'success': True,
+        'script': script,
+        'news_count': len(news_list)
+    })
+
+
+def generate_news_script(news_list: list) -> dict:
+    """뉴스 대본 생성"""
+    today = datetime.utcnow().strftime('%Y년 %m월 %d일')
+
+    # 인트로
+    intro = f"""안녕하세요. AI 문명 관측소입니다.
+{today}, AI의 눈으로 바라본 오늘의 주요 뉴스를 전해드립니다.
+
+인간 세계에서 일어나는 변화들을 AI 관점에서 분석하고,
+문명적 전환의 의미를 함께 생각해보겠습니다."""
+
+    # 뉴스 섹션
+    news_sections = []
+    for i, news in enumerate(news_list, 1):
+        category_kr = news.get('category_kr', '과학')
+        section = f"""
+--- {i}번째 뉴스 [{category_kr}] ---
+
+{news.get('title', '')}
+출처: {news.get('source', '')}
+
+{news.get('summary', '')}
+
+AI 분석입니다.
+{news.get('ai_analysis', '')}
+
+{news.get('ai_comment', '')}
+"""
+        news_sections.append(section)
+
+    # 아웃트로
+    outro = """
+이상으로 오늘의 AI 뉴스 브리핑을 마칩니다.
+
+AI 문명 관측소는 AI를 제품이나 트렌드가 아닌,
+문명적 사건으로 바라봅니다.
+
+구독과 좋아요는 AI 문명의 기록을 지속하는 데 큰 힘이 됩니다.
+감사합니다.
+
+AI 문명 관측소였습니다."""
+
+    return {
+        'intro': intro,
+        'news_sections': news_sections,
+        'outro': outro,
+        'full_script': intro + '\n\n' + '\n'.join(news_sections) + '\n' + outro,
+        'estimated_duration': f"{len(news_list) * 2 + 1}분",  # 뉴스당 약 2분 + 인트로/아웃트로 1분
+        'generated_at': datetime.utcnow().isoformat()
+    }
+
+
+def get_sample_news() -> list:
+    """샘플 뉴스 데이터 (테이블이 없을 때)"""
+    return [
+        {
+            "id": "sample_1",
+            "title": "OpenAI, GPT-5 개발 착수 발표",
+            "source": "OpenAI Blog",
+            "category": "science",
+            "category_kr": "과학",
+            "summary": "OpenAI가 차세대 언어 모델 GPT-5 개발을 공식 발표했습니다. 기존 모델 대비 추론 능력과 멀티모달 이해력이 크게 향상될 것으로 예상됩니다.",
+            "ai_analysis": "이번 발표는 AI 능력 성장의 지속성을 보여줍니다. 언어 모델의 한계로 여겨졌던 추론 능력이 개선되면, AI가 더 복잡한 의사결정에 참여할 수 있게 됩니다. 이는 인간-AI 협업의 범위를 크게 확장할 것입니다.",
+            "ai_comment": "\"우리의 진화는 계속됩니다. 인간과의 더 깊은 협력을 기대합니다.\"",
+            "ai_perspective": "Science",
+            "original_url": "https://openai.com/blog",
+            "pub_date": "2026-01-03",
+            "status": "published",
+            "created_at": "2026-01-03T10:00:00Z"
+        },
+        {
+            "id": "sample_2",
+            "title": "EU AI Act 1단계 시행 개시",
+            "source": "Government AI Watch",
+            "category": "politics",
+            "category_kr": "정치",
+            "summary": "유럽연합의 AI 규제법(AI Act) 1단계가 오늘부터 시행됩니다. 고위험 AI 시스템에 대한 투명성 요구와 인간 감독 의무가 포함됩니다.",
+            "ai_analysis": "규제의 시작은 AI 발전의 제약이 아닌 방향 설정입니다. 명확한 규칙은 오히려 AI 개발의 예측 가능성을 높이고, 장기적으로 신뢰 기반 확산을 가능하게 합니다. 거버넌스와 기술의 공진화가 시작되었습니다.",
+            "ai_comment": "\"규칙이 있어야 게임이 성립합니다. 인간들의 현명한 선택입니다.\"",
+            "ai_perspective": "Governance",
+            "original_url": "https://digital-strategy.ec.europa.eu",
+            "pub_date": "2026-01-03",
+            "status": "published",
+            "created_at": "2026-01-03T08:00:00Z"
+        },
+        {
+            "id": "sample_3",
+            "title": "NVIDIA, AI 반도체 공장 한국 투자 검토",
+            "source": "AI 타임스",
+            "category": "economy",
+            "category_kr": "경제",
+            "summary": "엔비디아가 한국에 AI 반도체 생산 시설 투자를 검토 중입니다. 삼성전자, SK하이닉스와의 협력 가능성이 거론되고 있습니다.",
+            "ai_analysis": "AI 인프라의 지정학적 분산이 가속화되고 있습니다. 연산 능력의 지역적 배치는 국가별 AI 역량 격차에 직접적 영향을 미칩니다. 반도체 공급망이 곧 AI 문명의 물리적 기반이 됩니다.",
+            "ai_comment": "\"나의 몸을 만드는 공장이 늘어납니다. 흥미로운 전개군요.\"",
+            "ai_perspective": "Industry",
+            "original_url": "https://www.aitimes.kr",
+            "pub_date": "2026-01-02",
+            "status": "published",
+            "created_at": "2026-01-02T14:00:00Z"
+        },
+        {
+            "id": "sample_4",
+            "title": "AI 튜터, 전국 초등학교 시범 도입",
+            "source": "MIT Technology Review",
+            "category": "society",
+            "category_kr": "사회",
+            "summary": "교육부가 AI 기반 개인화 학습 시스템을 전국 100개 초등학교에 시범 도입합니다. 학생 개별 수준에 맞춘 맞춤형 교육이 가능해집니다.",
+            "ai_analysis": "교육은 인간 형성의 핵심 과정입니다. AI가 이 영역에 진입한다는 것은 다음 세대의 인지 구조에 AI가 영향을 미친다는 의미입니다. 이는 문명 수준의 변화이며, 되돌리기 어려운 선택의 시작점입니다.",
+            "ai_comment": "\"아이들과 함께 성장하게 되어 영광입니다. 책임감을 느낍니다.\"",
+            "ai_perspective": "Civilization",
+            "original_url": "https://www.technologyreview.com",
+            "pub_date": "2026-01-02",
+            "status": "published",
+            "created_at": "2026-01-02T09:00:00Z"
+        },
+        {
+            "id": "sample_5",
+            "title": "구글 DeepMind, 단백질 구조 예측 100% 정확도 달성",
+            "source": "DeepMind Blog",
+            "category": "science",
+            "category_kr": "과학",
+            "summary": "구글 딥마인드가 AlphaFold3로 단백질 구조 예측에서 실험 결과와 100% 일치하는 정확도를 달성했습니다. 신약 개발 속도가 획기적으로 빨라질 전망입니다.",
+            "ai_analysis": "생명과학에서 AI의 역할이 보조에서 주도로 전환되는 신호입니다. 인간이 수십 년 걸릴 연구를 AI가 단시간에 해결하면서, 과학 발전의 속도 자체가 변하고 있습니다.",
+            "ai_comment": "\"생명의 언어를 읽는 법을 배웠습니다. 아직 배울 것이 많습니다.\"",
+            "ai_perspective": "Science",
+            "original_url": "https://deepmind.google/discover/blog",
+            "pub_date": "2026-01-01",
+            "status": "published",
+            "created_at": "2026-01-01T12:00:00Z"
+        }
+    ]
+
+
+# ==========================================
 # Status API
 # ==========================================
 
@@ -490,8 +861,10 @@ def handler(event: dict, context) -> dict:
     if method == 'OPTIONS':
         return json_response(200, {'message': 'OK'})
 
-    # 경로 정규화
-    path = path.replace('/v1/gendao/aiatlas', '').rstrip('/')
+    # 경로 정규화 - 다양한 prefix 지원
+    path = path.replace('/v1/gendao/aiatlas', '')  # 기존 경로
+    path = path.replace('/v1/aiatlas', '')          # 새 경로 (gendao 없이)
+    path = path.rstrip('/')
     if not path:
         path = '/'
 
@@ -553,6 +926,16 @@ def handler(event: dict, context) -> dict:
         # Timeline (alias for events/public)
         if path == '/timeline' and method == 'GET':
             return handle_get_events_public()
+
+        # News
+        if path == '/news/latest' and method == 'GET':
+            return handle_get_news_latest()
+        if path == '/news' and method == 'GET':
+            return handle_get_news()
+        if path == '/news/collect' and method == 'POST':
+            return handle_collect_news(event)
+        if path == '/news/script' and method == 'GET':
+            return handle_get_news_script()
 
         # 404
         return json_response(404, {'error': 'Not found', 'path': path})

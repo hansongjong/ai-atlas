@@ -856,6 +856,241 @@
             font-size: 0.85rem;
         }
 
+        /* News Briefing Styles */
+        .news-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .news-slideshow {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .news-slides {
+            min-height: 400px;
+        }
+        .news-slide {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+        .news-slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .news-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            color: var(--text-muted);
+        }
+        .news-category-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .news-category-science { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+        .news-category-tech { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .news-category-economy { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .news-category-politics { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .news-category-society { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .news-slide h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .news-source {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .news-summary {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .news-ai-section {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+        }
+        .news-ai-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .news-ai-analysis {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .news-ai-comment {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--secondary);
+            padding-left: 16px;
+            border-left: 3px solid var(--secondary);
+        }
+        .news-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .news-link:hover {
+            color: var(--secondary);
+        }
+        .news-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+        .news-nav:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .news-nav.prev { left: 16px; }
+        .news-nav.next { right: 16px; }
+        .news-indicators {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .news-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .news-indicator.active {
+            background: var(--primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+        .news-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .news-filter {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .news-filter:hover {
+            border-color: var(--primary);
+            color: var(--text-secondary);
+        }
+        .news-filter.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .news-list {
+            display: grid;
+            gap: 16px;
+        }
+        .news-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .news-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .news-card-category {
+            width: 4px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .news-card-category.science { background: #6366f1; }
+        .news-card-category.tech { background: #10b981; }
+        .news-card-category.economy { background: #f59e0b; }
+        .news-card-category.politics { background: #ef4444; }
+        .news-card-category.society { background: #ec4899; }
+        .news-card-content {
+            flex: 1;
+        }
+        .news-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .news-card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .news-card-comment {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        .news-footer {
+            text-align: center;
+            margin-top: 32px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h2 { font-size: 2.2rem; }
@@ -992,7 +1227,8 @@
     <!-- Tab Navigation -->
     <nav class="tab-nav">
         <div class="tab-nav-inner">
-            <button class="tab-btn active" data-tab="turning-points">현재 전환점</button>
+            <button class="tab-btn active" data-tab="news">AI 뉴스 브리핑</button>
+            <button class="tab-btn" data-tab="turning-points">현재 전환점</button>
             <button class="tab-btn" data-tab="timeline">AI 타임라인</button>
             <button class="tab-btn" data-tab="roadmaps">기술 로드맵</button>
             <button class="tab-btn" data-tab="governance">거버넌스</button>
@@ -1002,8 +1238,50 @@
         </div>
     </nav>
 
+    <!-- AI News Briefing -->
+    <div id="news" class="tab-content active">
+        <h2 class="section-title">AI 뉴스 브리핑</h2>
+        <p class="section-desc">AI의 눈으로 바라본 오늘의 주요 뉴스. 과학/정보통신/경제/정치/사회 5개 분야를 AI 관점에서 분석합니다.</p>
+
+        <div class="news-container">
+            <!-- News Slideshow -->
+            <div class="news-slideshow" id="newsSlideshow">
+                <div class="news-slides" id="newsSlides">
+                    <!-- 뉴스가 API에서 로드됩니다 -->
+                    <div class="news-loading">뉴스를 불러오는 중...</div>
+                </div>
+
+                <!-- Navigation -->
+                <button class="news-nav prev" onclick="prevNews()">‹</button>
+                <button class="news-nav next" onclick="nextNews()">›</button>
+
+                <!-- Indicators -->
+                <div class="news-indicators" id="newsIndicators"></div>
+            </div>
+
+            <!-- News Category Filter -->
+            <div class="news-filters">
+                <button class="news-filter active" data-category="all">전체</button>
+                <button class="news-filter" data-category="science">과학</button>
+                <button class="news-filter" data-category="tech">정보통신</button>
+                <button class="news-filter" data-category="economy">경제</button>
+                <button class="news-filter" data-category="politics">정치</button>
+                <button class="news-filter" data-category="society">사회</button>
+            </div>
+
+            <!-- News List -->
+            <div class="news-list" id="newsList">
+                <!-- 뉴스 카드가 여기에 로드됩니다 -->
+            </div>
+        </div>
+
+        <div class="news-footer">
+            <p>뉴스는 8시간마다 자동 업데이트됩니다. (00:00, 08:00, 16:00 KST)</p>
+        </div>
+    </div>
+
     <!-- Current Turning Points -->
-    <div id="turning-points" class="tab-content active">
+    <div id="turning-points" class="tab-content">
         <h2 class="section-title">2026 Turning Point Thesis</h2>
         <p class="section-desc">2026년은 AI 에이전트의 운영적 출현을 표시합니다.</p>
 
@@ -1773,6 +2051,129 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderGanttChart();
             initSlideshow();
+            loadNews();
+        });
+
+        // ==========================================
+        // News Briefing
+        // ==========================================
+        let newsData = [];
+        let currentNewsIndex = 0;
+        let filteredNews = [];
+
+        async function loadNews() {
+            try {
+                const response = await fetch(`${API_BASE}/news/latest`);
+                const data = await response.json();
+                if (data.success && data.news.length > 0) {
+                    newsData = data.news;
+                    filteredNews = newsData;
+                    renderNewsSlideshow();
+                    renderNewsList();
+                } else {
+                    document.getElementById('newsSlides').innerHTML =
+                        '<div class="news-loading">뉴스가 없습니다. 잠시 후 다시 시도해주세요.</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load news:', error);
+                document.getElementById('newsSlides').innerHTML =
+                    '<div class="news-loading">뉴스를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        function renderNewsSlideshow() {
+            const container = document.getElementById('newsSlides');
+            const indicators = document.getElementById('newsIndicators');
+
+            container.innerHTML = filteredNews.map((news, index) => `
+                <div class="news-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
+                    <span class="news-category-tag news-category-${news.category}">${news.category_kr || news.category}</span>
+                    <h3>${news.title}</h3>
+                    <div class="news-source">${news.source} | ${formatDate(news.created_at || news.pub_date)}</div>
+                    <p class="news-summary">${news.summary}</p>
+                    <div class="news-ai-section">
+                        <div class="news-ai-label">🤖 AI 관점 분석</div>
+                        <p class="news-ai-analysis">${news.ai_analysis}</p>
+                        <p class="news-ai-comment">${news.ai_comment}</p>
+                    </div>
+                    ${news.original_url ? `<a href="${news.original_url}" target="_blank" class="news-link">원본 기사 보기 →</a>` : ''}
+                </div>
+            `).join('');
+
+            indicators.innerHTML = filteredNews.map((_, index) => `
+                <div class="news-indicator ${index === 0 ? 'active' : ''}" onclick="goToNews(${index})"></div>
+            `).join('');
+
+            currentNewsIndex = 0;
+        }
+
+        function renderNewsList() {
+            const container = document.getElementById('newsList');
+            container.innerHTML = filteredNews.map((news, index) => `
+                <div class="news-card" onclick="goToNews(${index}); scrollToNewsSlide();">
+                    <div class="news-card-category ${news.category}"></div>
+                    <div class="news-card-content">
+                        <div class="news-card-title">${news.title}</div>
+                        <div class="news-card-meta">${news.source} | ${formatDate(news.created_at || news.pub_date)}</div>
+                        <div class="news-card-comment">${news.ai_comment}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function goToNews(index) {
+            const slides = document.querySelectorAll('.news-slide');
+            const indicators = document.querySelectorAll('.news-indicator');
+
+            slides.forEach(s => s.classList.remove('active'));
+            indicators.forEach(i => i.classList.remove('active'));
+
+            if (slides[index]) slides[index].classList.add('active');
+            if (indicators[index]) indicators[index].classList.add('active');
+
+            currentNewsIndex = index;
+        }
+
+        function nextNews() {
+            goToNews((currentNewsIndex + 1) % filteredNews.length);
+        }
+
+        function prevNews() {
+            goToNews((currentNewsIndex - 1 + filteredNews.length) % filteredNews.length);
+        }
+
+        function scrollToNewsSlide() {
+            document.getElementById('newsSlideshow').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        // News Filter
+        document.querySelectorAll('.news-filter').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const category = btn.dataset.category;
+                if (category === 'all') {
+                    filteredNews = newsData;
+                } else {
+                    filteredNews = newsData.filter(n => n.category === category);
+                }
+
+                if (filteredNews.length > 0) {
+                    renderNewsSlideshow();
+                    renderNewsList();
+                } else {
+                    document.getElementById('newsSlides').innerHTML =
+                        '<div class="news-loading">해당 카테고리의 뉴스가 없습니다.</div>';
+                    document.getElementById('newsList').innerHTML = '';
+                }
+            });
         });
     </script>
 </body>

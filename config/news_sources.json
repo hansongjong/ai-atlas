@@ -5,15 +5,17 @@
       "url": "https://openai.com/blog/",
       "rss": null,
       "lang": "en",
-      "category": "Science",
+      "category": "science",
+      "category_kr": "과학",
       "priority": "high"
     },
     {
-      "name": "Anthropic Blog",
+      "name": "Anthropic News",
       "url": "https://www.anthropic.com/news",
       "rss": null,
       "lang": "en",
-      "category": "Science",
+      "category": "science",
+      "category_kr": "과학",
       "priority": "high"
     },
     {
@@ -21,15 +23,17 @@
       "url": "https://deepmind.google/discover/blog/",
       "rss": null,
       "lang": "en",
-      "category": "Science",
+      "category": "science",
+      "category_kr": "과학",
       "priority": "high"
     },
     {
-      "name": "MIT Technology Review - AI",
-      "url": "https://www.technologyreview.com/topic/artificial-intelligence/",
-      "rss": "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+      "name": "IEEE Spectrum - AI",
+      "url": "https://spectrum.ieee.org/topic/artificial-intelligence/",
+      "rss": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
       "lang": "en",
-      "category": "Civilization",
+      "category": "science",
+      "category_kr": "과학",
       "priority": "high"
     },
     {
@@ -37,31 +41,35 @@
       "url": "https://www.theverge.com/ai-artificial-intelligence",
       "rss": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
       "lang": "en",
-      "category": "Industry",
+      "category": "tech",
+      "category_kr": "정보통신",
+      "priority": "high"
+    },
+    {
+      "name": "Ars Technica - AI",
+      "url": "https://arstechnica.com/ai/",
+      "rss": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+      "lang": "en",
+      "category": "tech",
+      "category_kr": "정보통신",
       "priority": "medium"
     },
     {
-      "name": "Wired - AI",
-      "url": "https://www.wired.com/tag/artificial-intelligence/",
+      "name": "Tom's Hardware - AI",
+      "url": "https://www.tomshardware.com/tag/artificial-intelligence",
       "rss": null,
       "lang": "en",
-      "category": "Civilization",
+      "category": "tech",
+      "category_kr": "정보통신",
       "priority": "medium"
     },
     {
-      "name": "AI News",
-      "url": "https://www.artificialintelligence-news.com/",
-      "rss": "https://www.artificialintelligence-news.com/feed/",
+      "name": "Reuters Technology",
+      "url": "https://www.reuters.com/technology/artificial-intelligence/",
+      "rss": null,
       "lang": "en",
-      "category": "Industry",
-      "priority": "medium"
-    },
-    {
-      "name": "IEEE Spectrum - AI",
-      "url": "https://spectrum.ieee.org/topic/artificial-intelligence/",
-      "rss": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
-      "lang": "en",
-      "category": "Science",
+      "category": "economy",
+      "category_kr": "경제",
       "priority": "high"
     },
     {
@@ -69,24 +77,66 @@
       "url": "https://www.aitimes.kr/",
       "rss": "https://www.aitimes.kr/rss/allArticle.xml",
       "lang": "ko",
-      "category": "Industry",
-      "priority": "medium"
+      "category": "economy",
+      "category_kr": "경제",
+      "priority": "high"
     },
     {
       "name": "Government AI Watch",
       "url": "https://www.govtech.com/artificial-intelligence",
       "rss": null,
       "lang": "en",
-      "category": "Governance",
+      "category": "politics",
+      "category_kr": "정치",
       "priority": "high"
+    },
+    {
+      "name": "EU AI Act News",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence",
+      "rss": null,
+      "lang": "en",
+      "category": "politics",
+      "category_kr": "정치",
+      "priority": "high"
+    },
+    {
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/",
+      "rss": "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+      "lang": "en",
+      "category": "society",
+      "category_kr": "사회",
+      "priority": "high"
+    },
+    {
+      "name": "Wired - AI",
+      "url": "https://www.wired.com/tag/artificial-intelligence/",
+      "rss": null,
+      "lang": "en",
+      "category": "society",
+      "category_kr": "사회",
+      "priority": "medium"
+    },
+    {
+      "name": "AI News",
+      "url": "https://www.artificialintelligence-news.com/",
+      "rss": "https://www.artificialintelligence-news.com/feed/",
+      "lang": "en",
+      "category": "society",
+      "category_kr": "사회",
+      "priority": "medium"
     }
   ],
   "categories": {
-    "Civilization": "문명적 관점 - AI as historical event",
-    "Science": "과학적 관점 - hardware & software evolution",
-    "Industry": "산업/경제적 관점 - governance, labor, production",
-    "Governance": "거버넌스 관점 - policy, regulation, control"
+    "science": "과학 - AI 연구, 기술 발전, 논문 발표",
+    "tech": "정보통신 - 반도체, 클라우드, 데이터센터, 네트워크",
+    "economy": "경제 - AI 기업 동향, 투자, 노동시장 변화",
+    "politics": "정치 - AI 규제, 국가 정책, 국제 협력/갈등",
+    "society": "사회 - AI 윤리, 교육, 일자리, 생활 변화"
   },
-  "update_frequency": "daily",
+  "update_frequency": "8hours",
+  "schedule_times": ["00:00", "08:00", "16:00"],
+  "max_per_category": 3,
+  "retention_days": 30,
   "last_updated": "2026-01-03"
 }
