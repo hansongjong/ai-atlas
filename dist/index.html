@@ -144,102 +144,193 @@
         }
 
         /* Hero - Declaration */
-        .hero {
-            background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1a2e 100%);
-            padding: 100px 24px;
-            text-align: center;
+        /* Hero Slideshow - 16:9 Aspect Ratio */
+        .hero-slideshow {
             position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1a2e 100%);
             overflow: hidden;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
-        .hero::before {
+        .hero-slideshow::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
             pointer-events: none;
-        }
-        .hero-content {
-            position: relative;
             z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
         }
-        .hero-badge {
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 48px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .slide.prev {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        .slide-badge {
             display: inline-block;
             background: var(--primary-light);
             border: 1px solid var(--primary);
             color: var(--primary);
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 0.85rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .hero h2 {
-            font-size: 3.5rem;
+        .slide h2 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
             font-weight: 800;
-            margin-bottom: 24px;
-            letter-spacing: -2px;
-            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            line-height: 1.2;
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .hero-statement {
-            font-size: 1.3rem;
+        .slide-text {
+            font-size: clamp(1rem, 2vw, 1.3rem);
             color: var(--text-secondary);
             max-width: 700px;
-            margin: 0 auto 48px;
             line-height: 1.8;
         }
-        .hero-statement strong {
+        .slide-text strong {
             color: var(--secondary);
             font-weight: 600;
         }
-        .hero-hypothesis {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 32px;
-            margin-top: 48px;
-            text-align: left;
-        }
-        .hero-hypothesis h3 {
-            color: var(--warning);
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .hero-hypothesis p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.8;
-        }
-        .hero-hypothesis ul {
+        .slide-list {
             list-style: none;
-            margin-top: 16px;
+            margin-top: 24px;
+            text-align: left;
+            display: inline-block;
         }
-        .hero-hypothesis ul li {
+        .slide-list li {
             color: var(--text-secondary);
             padding: 8px 0;
-            padding-left: 24px;
+            padding-left: 28px;
             position: relative;
-            font-size: 0.95rem;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
         }
-        .hero-hypothesis ul li::before {
-            content: ">";
+        .slide-list li::before {
+            content: "▸";
             position: absolute;
             left: 0;
             color: var(--primary);
             font-weight: 700;
+        }
+        .slide-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .slide-highlight {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 20px 32px;
+            margin-top: 20px;
+        }
+        .slide-highlight h3 {
+            color: var(--warning);
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .slide-highlight p {
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        /* Slideshow Controls */
+        .slide-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .slide-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .slide-indicator.active {
+            background: var(--primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+        .slide-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary);
+            z-index: 10;
+            transition: width 0.1s linear;
+        }
+        .slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+        }
+        .slide-nav:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .slide-nav.prev { left: 16px; }
+        .slide-nav.next { right: 16px; }
+
+        .hero-wrapper {
+            padding: 32px 24px;
+            background: var(--bg-dark);
         }
 
         /* Tab Navigation */
@@ -797,29 +888,106 @@
     </header>
 
     <!-- Hero - Declaration -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">Civilizational Observatory</div>
-            <h2>AI is a Civilizational Event</h2>
-            <p class="hero-statement">
-                AI는 제품이 아닙니다. AI는 트렌드가 아닙니다.<br>
-                <strong>AI는 문명적 사건입니다.</strong><br><br>
-                우리는 예측하지 않습니다.<br>
-                되돌릴 수 없는 선택과 구조적 전환을 기록합니다.
-            </p>
+    <!-- Hero Slideshow Section -->
+    <div class="hero-wrapper">
+        <div class="hero-slideshow" id="heroSlideshow">
+            <!-- Slide 1: Main Declaration -->
+            <div class="slide active" data-slide="0">
+                <div class="slide-badge">Civilizational Observatory</div>
+                <h2>AI is a Civilizational Event</h2>
+                <p class="slide-text">
+                    AI는 제품이 아닙니다. AI는 트렌드가 아닙니다.<br>
+                    <strong>AI는 문명적 사건입니다.</strong>
+                </p>
+                <p class="slide-text" style="margin-top: 16px; font-size: 1rem;">
+                    우리는 예측하지 않습니다.<br>
+                    되돌릴 수 없는 선택과 구조적 전환을 기록합니다.
+                </p>
+            </div>
 
-            <div class="hero-hypothesis">
-                <h3>Core Hypothesis</h3>
-                <p>우리는 향후 100년 내에, 단일 AI 시스템을 운영하는 단일 기업이 글로벌 문명 인프라의 지배적 운영자가 될 수 있다고 가정합니다.</p>
-                <ul>
+            <!-- Slide 2: Core Hypothesis -->
+            <div class="slide" data-slide="1">
+                <div class="slide-badge">Core Hypothesis</div>
+                <h2>100년 가설</h2>
+                <p class="slide-text">
+                    향후 100년 내에, 단일 AI 시스템을 운영하는 단일 기업이<br>
+                    <strong>글로벌 문명 인프라의 지배적 운영자</strong>가 될 수 있습니다.
+                </p>
+                <ul class="slide-list">
                     <li>물질적 희소성이 없는 세계</li>
                     <li>생산과 창조에 대한 보편적 접근</li>
                     <li>완전한 감시와 통제</li>
                     <li>전통적 인간 자율성의 상실</li>
                 </ul>
             </div>
+
+            <!-- Slide 3: 2026 Turning Point -->
+            <div class="slide" data-slide="2">
+                <div class="slide-badge">2026 Turning Point</div>
+                <h2>AI 에이전트의 운영적 출현</h2>
+                <p class="slide-text">
+                    2026년은 AI가 도구에서 <strong>자율적 행위자</strong>로<br>
+                    전환하는 분수령입니다.
+                </p>
+                <ul class="slide-list">
+                    <li>AI 에이전트가 직무가 아닌 작업 단위를 대체</li>
+                    <li>소프트웨어 개발의 80%가 AI 보조로 전환</li>
+                    <li>산업 지식 흡수가 비대칭적으로 진행</li>
+                </ul>
+            </div>
+
+            <!-- Slide 4: Four Perspectives -->
+            <div class="slide" data-slide="3">
+                <div class="slide-badge">Four Perspectives</div>
+                <h2>4가지 관점으로 AI를 분석</h2>
+                <ul class="slide-list">
+                    <li><strong style="color: #ec4899;">문명적 관점</strong> — AI as historical event</li>
+                    <li><strong style="color: #6366f1;">과학적 관점</strong> — hardware & software evolution</li>
+                    <li><strong style="color: #10b981;">산업적 관점</strong> — governance, labor, production</li>
+                    <li><strong style="color: #f59e0b;">거버넌스 관점</strong> — policy, regulation, control</li>
+                </ul>
+            </div>
+
+            <!-- Slide 5: Irreversible Choices -->
+            <div class="slide" data-slide="4">
+                <div class="slide-badge">Irreversible Choices</div>
+                <h2>되돌릴 수 없는 선택들</h2>
+                <p class="slide-text">
+                    일단 특정 임계점을 넘으면<br>
+                    <strong>이전 상태로 돌아갈 수 없습니다.</strong>
+                </p>
+                <ul class="slide-list">
+                    <li>AI 의존적 인프라 구축</li>
+                    <li>인간 전문성의 비가역적 위축</li>
+                    <li>자율 무기 시스템 배치</li>
+                    <li>AI 거버넌스 선례 확립</li>
+                </ul>
+            </div>
+
+            <!-- Slide 6: Technology Roadmaps -->
+            <div class="slide" data-slide="5">
+                <div class="slide-badge">Technology Convergence</div>
+                <h2>5개의 수렴하는 기술 로드맵</h2>
+                <ul class="slide-list">
+                    <li><strong>Neural Architecture</strong> — 신경망 아키텍처 진화</li>
+                    <li><strong>AI Compute</strong> — 연산 인프라 확장</li>
+                    <li><strong>Foundation Models</strong> — 기반 모델 발전</li>
+                    <li><strong>Embodied AI</strong> — 물리적 AI 로봇</li>
+                    <li><strong>AI Governance</strong> — 규제와 윤리</li>
+                </ul>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button class="slide-nav prev" onclick="prevSlide()">‹</button>
+            <button class="slide-nav next" onclick="nextSlide()">›</button>
+
+            <!-- Indicators -->
+            <div class="slide-indicators" id="slideIndicators"></div>
+
+            <!-- Progress Bar -->
+            <div class="slide-progress" id="slideProgress"></div>
         </div>
-    </section>
+    </div>
 
     <!-- Tab Navigation -->
     <nav class="tab-nav">
@@ -1504,9 +1672,107 @@
             });
         }
 
+        // ==========================================
+        // Hero Slideshow
+        // ==========================================
+        let currentSlide = 0;
+        let slideInterval;
+        let progressInterval;
+        const SLIDE_DURATION = 6000; // 6 seconds per slide
+        const PROGRESS_UPDATE = 50; // Update progress every 50ms
+
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const indicatorsContainer = document.getElementById('slideIndicators');
+        const progressBar = document.getElementById('slideProgress');
+
+        // Create indicators
+        function createIndicators() {
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'slide-indicator' + (i === 0 ? ' active' : '');
+                indicator.onclick = () => goToSlide(i);
+                indicatorsContainer.appendChild(indicator);
+            }
+        }
+
+        // Update indicators
+        function updateIndicators() {
+            document.querySelectorAll('.slide-indicator').forEach((ind, i) => {
+                ind.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            const prevSlide = currentSlide;
+            currentSlide = index;
+
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'prev');
+                if (i === currentSlide) {
+                    slide.classList.add('active');
+                } else if (i === prevSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            updateIndicators();
+            resetProgress();
+        }
+
+        // Next slide
+        function nextSlide() {
+            goToSlide((currentSlide + 1) % totalSlides);
+        }
+
+        // Previous slide
+        function prevSlide() {
+            goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+        }
+
+        // Progress bar
+        let progressValue = 0;
+        function resetProgress() {
+            progressValue = 0;
+            progressBar.style.width = '0%';
+            clearInterval(progressInterval);
+            clearInterval(slideInterval);
+
+            progressInterval = setInterval(() => {
+                progressValue += (100 / (SLIDE_DURATION / PROGRESS_UPDATE));
+                progressBar.style.width = progressValue + '%';
+            }, PROGRESS_UPDATE);
+
+            slideInterval = setInterval(nextSlide, SLIDE_DURATION);
+        }
+
+        // Pause on hover
+        const slideshow = document.getElementById('heroSlideshow');
+        slideshow.addEventListener('mouseenter', () => {
+            clearInterval(slideInterval);
+            clearInterval(progressInterval);
+        });
+        slideshow.addEventListener('mouseleave', () => {
+            resetProgress();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Initialize slideshow
+        function initSlideshow() {
+            createIndicators();
+            resetProgress();
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderGanttChart();
+            initSlideshow();
         });
     </script>
 </body>
