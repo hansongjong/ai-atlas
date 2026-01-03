@@ -8,7 +8,8 @@
       "Bash(gh repo create:*)",
       "Bash(curl:*)",
       "Bash(git push:*)",
-      "Bash(python -c:*)"
+      "Bash(python -c:*)",
+      "Bash(sam deploy:*)"
     ]
   }
 }
