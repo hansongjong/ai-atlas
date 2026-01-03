@@ -300,67 +300,197 @@
             font-size: 1rem;
         }
 
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding-left: 32px;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(180deg, var(--primary), var(--secondary));
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 32px;
-        }
-        .timeline-item:last-child { padding-bottom: 0; }
-        .timeline-dot {
-            position: absolute;
-            left: -38px;
-            top: 4px;
-            width: 14px;
-            height: 14px;
-            background: var(--primary);
-            border: 3px solid var(--bg-dark);
-            border-radius: 50%;
-            box-shadow: var(--glow);
-        }
-        .timeline-date {
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .timeline-card {
+        /* Gantt Chart Timeline */
+        .gantt-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
+            overflow-x: auto;
             padding: 24px;
         }
-        .timeline-card h3 {
-            font-size: 1.1rem;
+        .gantt-chart {
+            min-width: 1200px;
+            position: relative;
+        }
+        .gantt-header {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+        }
+        .gantt-header-label {
+            width: 280px;
+            flex-shrink: 0;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .timeline-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.7;
+        .gantt-header-timeline {
+            flex: 1;
+            display: flex;
+            position: relative;
         }
-        .timeline-category {
-            display: inline-block;
+        .gantt-era {
+            flex: 1;
+            text-align: center;
             font-size: 0.75rem;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-bottom: 12px;
+            color: var(--text-muted);
+            padding: 4px 0;
+            border-left: 1px solid var(--border);
         }
+        .gantt-era:first-child { border-left: none; }
+        .gantt-era.current {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .gantt-era.future {
+            color: var(--secondary);
+            opacity: 0.7;
+        }
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            min-height: 48px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .gantt-row:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .gantt-row-label {
+            width: 280px;
+            flex-shrink: 0;
+            padding-right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .gantt-row-label .event-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .gantt-row-label .event-year {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .gantt-row-timeline {
+            flex: 1;
+            position: relative;
+            height: 32px;
+            display: flex;
+        }
+        .gantt-cell {
+            flex: 1;
+            border-left: 1px solid rgba(51, 65, 85, 0.3);
+            position: relative;
+        }
+        .gantt-cell:first-child { border-left: none; }
+        .gantt-bar {
+            position: absolute;
+            height: 24px;
+            top: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 2;
+        }
+        .gantt-bar:hover {
+            transform: scaleY(1.2);
+            box-shadow: var(--glow);
+            z-index: 10;
+        }
+        .gantt-bar.civilization { background: linear-gradient(90deg, #ec4899, #f472b6); }
+        .gantt-bar.science { background: linear-gradient(90deg, #6366f1, #818cf8); }
+        .gantt-bar.industry { background: linear-gradient(90deg, #10b981, #34d399); }
+        .gantt-bar.governance { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .gantt-bar.future {
+            opacity: 0.6;
+            border: 2px dashed rgba(255,255,255,0.5);
+        }
+        .gantt-now-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--danger);
+            z-index: 5;
+        }
+        .gantt-now-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: var(--danger);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .gantt-legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .gantt-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .gantt-legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .gantt-legend-color.civilization { background: #ec4899; }
+        .gantt-legend-color.science { background: #6366f1; }
+        .gantt-legend-color.industry { background: #10b981; }
+        .gantt-legend-color.governance { background: #f59e0b; }
+
+        /* Event Tooltip */
+        .gantt-tooltip {
+            display: none;
+            position: fixed;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            max-width: 320px;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+        }
+        .gantt-tooltip.show { display: block; }
+        .gantt-tooltip h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .gantt-tooltip p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+        .gantt-tooltip .category-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
         .category-civilization { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
         .category-science { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
         .category-industry { background: rgba(16, 185, 129, 0.2); color: #10b981; }
@@ -772,71 +902,73 @@
         </div>
     </div>
 
-    <!-- AI Timeline -->
+    <!-- AI Timeline - Gantt Chart -->
     <div id="timeline" class="tab-content">
         <h2 class="section-title">AI Civilization Timeline</h2>
-        <p class="section-desc">AI 발전의 주요 이정표와 문명적 전환점들</p>
+        <p class="section-desc">컴퓨터의 출현부터 AI 문명까지 - 수평축: 시간, 수직축: 이벤트 (마우스 오버로 상세 정보)</p>
 
-        <div class="timeline" id="timeline-container">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">2022.11</div>
-                <div class="timeline-card">
-                    <span class="timeline-category category-civilization">Civilization</span>
-                    <h3>ChatGPT 출시</h3>
-                    <p><strong>What Changed:</strong> 대화형 AI가 대중에게 접근 가능해짐<br>
-                    <strong>Why It Matters:</strong> AI와의 자연어 상호작용이 일상화되는 시작점<br>
-                    <strong>What Became Possible:</strong> 비전문가도 AI를 도구로 활용 가능</p>
+        <div class="gantt-container">
+            <div class="gantt-chart" id="gantt-chart">
+                <!-- Header: Time Eras -->
+                <div class="gantt-header">
+                    <div class="gantt-header-label">Event</div>
+                    <div class="gantt-header-timeline">
+                        <div class="gantt-era">1940s</div>
+                        <div class="gantt-era">1950s</div>
+                        <div class="gantt-era">1960s</div>
+                        <div class="gantt-era">1970s</div>
+                        <div class="gantt-era">1980s</div>
+                        <div class="gantt-era">1990s</div>
+                        <div class="gantt-era">2000s</div>
+                        <div class="gantt-era">2010s</div>
+                        <div class="gantt-era current">2020s</div>
+                        <div class="gantt-era future">2030s</div>
+                        <div class="gantt-era future">2040s</div>
+                        <div class="gantt-era future">2050+</div>
+                    </div>
+                </div>
+
+                <!-- Events will be rendered by JavaScript -->
+                <div id="gantt-events"></div>
+
+                <!-- Now Line Marker -->
+                <div class="gantt-now-line" id="gantt-now-line" style="display:none;">
+                    <div class="gantt-now-label">NOW</div>
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">2023.03</div>
-                <div class="timeline-card">
-                    <span class="timeline-category category-science">Science</span>
-                    <h3>GPT-4 발표</h3>
-                    <p><strong>What Changed:</strong> 멀티모달 능력과 추론 능력의 비약적 향상<br>
-                    <strong>Why It Matters:</strong> 전문가 수준의 작업 수행이 가능해짐<br>
-                    <strong>What Became Possible:</strong> 복잡한 분석, 코딩, 창작 작업의 AI 위임</p>
+            <!-- Legend -->
+            <div class="gantt-legend">
+                <div class="gantt-legend-item">
+                    <div class="gantt-legend-color civilization"></div>
+                    <span>Civilization (문명)</span>
+                </div>
+                <div class="gantt-legend-item">
+                    <div class="gantt-legend-color science"></div>
+                    <span>Science (과학/기술)</span>
+                </div>
+                <div class="gantt-legend-item">
+                    <div class="gantt-legend-color industry"></div>
+                    <span>Industry (산업/경제)</span>
+                </div>
+                <div class="gantt-legend-item">
+                    <div class="gantt-legend-color governance"></div>
+                    <span>Governance (거버넌스)</span>
+                </div>
+                <div class="gantt-legend-item" style="margin-left: 24px;">
+                    <div style="width:16px;height:16px;border:2px dashed #64748b;border-radius:4px;"></div>
+                    <span>Future (예측)</span>
                 </div>
             </div>
+        </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">2024.02</div>
-                <div class="timeline-card">
-                    <span class="timeline-category category-industry">Industry</span>
-                    <h3>Sora 발표</h3>
-                    <p><strong>What Changed:</strong> 텍스트로 고품질 비디오 생성<br>
-                    <strong>Why It Matters:</strong> 영상 제작의 민주화와 콘텐츠 산업 재편<br>
-                    <strong>What Became Possible:</strong> 개인이 스튜디오 수준의 영상 제작</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">2025.01</div>
-                <div class="timeline-card">
-                    <span class="timeline-category category-science">Science</span>
-                    <h3>AI 에이전트 시대 개막</h3>
-                    <p><strong>What Changed:</strong> AI가 도구에서 자율적 행위자로 전환<br>
-                    <strong>Why It Matters:</strong> 인간 감독 없이 복잡한 작업 수행<br>
-                    <strong>What Became Possible:</strong> 24/7 자율 운영, 멀티스텝 작업 자동화</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">2025.12</div>
-                <div class="timeline-card">
-                    <span class="timeline-category category-governance">Governance</span>
-                    <h3>AI 규제 프레임워크 구축</h3>
-                    <p><strong>What Changed:</strong> 주요국 AI 규제법 시행<br>
-                    <strong>Why It Matters:</strong> AI 개발과 배포의 법적 경계 설정<br>
-                    <strong>What Became Possible:</strong> 책임있는 AI 개발 가이드라인 확립</p>
-                </div>
-            </div>
+        <!-- Tooltip -->
+        <div class="gantt-tooltip" id="gantt-tooltip">
+            <div class="category-tag" id="tooltip-category"></div>
+            <h4 id="tooltip-title"></h4>
+            <p id="tooltip-what"></p>
+            <p id="tooltip-why"></p>
+            <p id="tooltip-possible"></p>
         </div>
     </div>
 
@@ -1212,23 +1344,168 @@
         // API Configuration
         const API_BASE = 'https://0gqxz2ps31.execute-api.ap-northeast-2.amazonaws.com/prod/v1/gendao/aiatlas';
 
-        // Load dynamic content (placeholder for future API integration)
-        async function loadEvents() {
-            try {
-                const response = await fetch(`${API_BASE}/events/public`);
-                if (response.ok) {
-                    const data = await response.json();
-                    // Render events to timeline
-                    console.log('Events loaded:', data);
-                }
-            } catch (error) {
-                console.log('Using static content');
-            }
+        // Timeline Events Data (1940s ~ 2100+)
+        const timelineEvents = [
+            // === PAST: Foundation Era ===
+            { year: 1946, title: "ENIAC 완성", category: "science",
+              what: "최초의 범용 전자 컴퓨터 탄생", why: "디지털 컴퓨팅 시대의 시작", possible: "복잡한 수학 계산의 자동화" },
+            { year: 1947, title: "트랜지스터 발명", category: "science",
+              what: "벨 연구소에서 반도체 트랜지스터 발명", why: "진공관을 대체할 소형화 가능한 스위칭 소자", possible: "소형 전자기기, 집적회로의 기반" },
+            { year: 1956, title: "AI 용어 탄생", category: "science",
+              what: "다트머스 회의에서 'Artificial Intelligence' 용어 정의", why: "학문 분야로서 AI 연구 시작", possible: "체계적인 AI 연구 프로그램" },
+            { year: 1958, title: "집적회로(IC) 발명", category: "science",
+              what: "Jack Kilby가 최초의 IC 개발", why: "전자회로의 초소형화 가능", possible: "마이크로프로세서, 메모리 칩 개발" },
+            { year: 1969, title: "ARPANET 탄생", category: "civilization",
+              what: "인터넷의 전신 네트워크 구축", why: "분산 컴퓨팅과 글로벌 통신의 시작", possible: "월드와이드웹, 클라우드 컴퓨팅" },
+            { year: 1971, title: "마이크로프로세서", category: "science",
+              what: "Intel 4004 - 최초의 상용 마이크로프로세서", why: "CPU의 단일 칩 집적", possible: "개인용 컴퓨터 시대" },
+            { year: 1981, title: "IBM PC 출시", category: "industry",
+              what: "개인용 컴퓨터의 표준화", why: "컴퓨터의 대중화 시작", possible: "가정과 사무실에 컴퓨터 보급" },
+            { year: 1989, title: "월드와이드웹", category: "civilization",
+              what: "Tim Berners-Lee가 WWW 발명", why: "정보 접근의 민주화", possible: "글로벌 정보 공유, e-commerce" },
+            { year: 1997, title: "Deep Blue vs 카스파로프", category: "science",
+              what: "IBM Deep Blue가 체스 세계 챔피언 격파", why: "특정 영역에서 AI가 인간 능가", possible: "전문가 시스템의 실용화" },
+
+            // === 2000s-2010s: Digital Transformation ===
+            { year: 2007, title: "iPhone 출시", category: "industry",
+              what: "터치스크린 스마트폰 대중화", why: "모바일 인터넷 시대 개막", possible: "앱 경제, 모바일 AI 서비스" },
+            { year: 2012, title: "AlexNet / 딥러닝 혁명", category: "science",
+              what: "ImageNet에서 딥러닝이 기존 방식 압도", why: "신경망 기반 AI의 부활", possible: "이미지 인식, 음성 인식 급발전" },
+            { year: 2016, title: "AlphaGo vs 이세돌", category: "civilization",
+              what: "AI가 바둑에서 인간 최고수 격파", why: "직관적 영역에서도 AI 우위 입증", possible: "범용 AI 연구 가속화" },
+            { year: 2017, title: "Transformer 아키텍처", category: "science",
+              what: "Google의 Attention is All You Need 논문", why: "대규모 언어 모델의 기반 기술", possible: "GPT, BERT 등 LLM 시대" },
+
+            // === 2020s: AI Revolution ===
+            { year: 2020, title: "GPT-3 공개", category: "science",
+              what: "1750억 파라미터 대규모 언어 모델", why: "자연어 이해/생성의 비약적 발전", possible: "AI 글쓰기, 코딩 보조" },
+            { year: 2022, title: "ChatGPT 출시", category: "civilization",
+              what: "대화형 AI가 대중에게 접근 가능", why: "AI와의 자연어 상호작용 일상화", possible: "비전문가도 AI 활용 가능" },
+            { year: 2023, title: "GPT-4 발표", category: "science",
+              what: "멀티모달 능력과 추론 능력 비약적 향상", why: "전문가 수준 작업 수행 가능", possible: "복잡한 분석, 코딩, 창작 AI 위임" },
+            { year: 2024, title: "Sora / 영상 생성 AI", category: "industry",
+              what: "텍스트로 고품질 비디오 생성", why: "영상 제작의 민주화", possible: "개인이 스튜디오 수준 영상 제작" },
+            { year: 2025, title: "AI 에이전트 시대", category: "science",
+              what: "AI가 도구에서 자율적 행위자로 전환", why: "인간 감독 없이 복잡한 작업 수행", possible: "24/7 자율 운영, 멀티스텝 자동화" },
+            { year: 2026, title: "AI 규제 프레임워크", category: "governance",
+              what: "주요국 AI 규제법 시행", why: "AI 개발/배포의 법적 경계 설정", possible: "책임있는 AI 가이드라인 확립" },
+
+            // === FUTURE: Predictions ===
+            { year: 2028, title: "AI 반도체 자급", category: "industry", future: true,
+              what: "AI 전용 칩 설계/제조 주권 경쟁 본격화", why: "컴퓨팅 자원이 국가 전략 자산화", possible: "지정학적 AI 블록 형성" },
+            { year: 2030, title: "범용 AI 에이전트", category: "science", future: true,
+              what: "다양한 업무를 수행하는 자율 AI 보편화", why: "화이트칼라 업무의 대규모 자동화", possible: "인간-AI 협업이 기본 업무 형태" },
+            { year: 2032, title: "AI-로봇 노동력", category: "industry", future: true,
+              what: "물리적 노동의 AI-로봇 대체 가속", why: "제조/물류/서비스 자동화", possible: "인간 노동의 재정의" },
+            { year: 2035, title: "AI 법률/규범 생성", category: "governance", future: true,
+              what: "AI가 법률 초안 작성, 규범 제안", why: "복잡한 규제 환경의 자동화 필요", possible: "AI-인간 공동 입법" },
+            { year: 2040, title: "핵융합 + AI 에너지", category: "industry", future: true,
+              what: "핵융합 발전과 AI 통합 에너지 관리", why: "AI 인프라의 에너지 수요 폭증 대응", possible: "에너지 제약 없는 AI 확장" },
+            { year: 2045, title: "AGI 임계점", category: "science", future: true,
+              what: "인간 수준 범용 인공지능 달성 가능성", why: "AI가 모든 인지 작업에서 인간 능가", possible: "특이점 논의 현실화" },
+            { year: 2050, title: "AI 문명 인프라", category: "civilization", future: true,
+              what: "주요 문명 인프라의 AI 운영 의존", why: "복잡성이 인간 관리 능력 초과", possible: "AI 없이 문명 운영 불가" },
+            { year: 2060, title: "인간-AI 공진화", category: "civilization", future: true,
+              what: "인간 인지 능력과 AI의 통합 인터페이스", why: "경쟁에서 공생으로 패러다임 전환", possible: "새로운 형태의 지능 출현" },
+            { year: 2080, title: "자기개선 AI", category: "science", future: true,
+              what: "AI가 스스로 알고리즘 개선", why: "인간 개입 없는 발전 사이클", possible: "예측 불가능한 능력 도약" },
+            { year: 2100, title: "포스트-휴먼 시대", category: "civilization", future: true,
+              what: "인간과 AI의 경계가 모호해짐", why: "생물학적/디지털 지능의 융합", possible: "문명의 근본적 재정의" }
+        ];
+
+        // Gantt Chart Rendering
+        function renderGanttChart() {
+            const container = document.getElementById('gantt-events');
+            const startYear = 1940;
+            const endYear = 2110;
+            const totalYears = endYear - startYear;
+            const decadeWidth = 100 / 12; // 12 eras (decades + 2050+)
+
+            let html = '';
+
+            timelineEvents.forEach(event => {
+                const yearOffset = event.year - startYear;
+                const decadeIndex = Math.floor(yearOffset / 10);
+                const yearInDecade = (yearOffset % 10) / 10;
+
+                // Calculate bar position (percentage)
+                const leftPercent = (decadeIndex + yearInDecade) * decadeWidth;
+                const barWidth = event.future ? 4 : 2; // Future events are wider (uncertainty)
+
+                const futureClass = event.future ? ' future' : '';
+
+                html += `
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <span class="event-year">${event.year}</span>
+                            <span class="event-name">${event.title}</span>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            ${Array(12).fill(0).map(() => '<div class="gantt-cell"></div>').join('')}
+                            <div class="gantt-bar ${event.category}${futureClass}"
+                                 style="left: calc(${leftPercent}% + 4px); width: ${barWidth}%;"
+                                 data-title="${event.title}"
+                                 data-year="${event.year}"
+                                 data-category="${event.category}"
+                                 data-what="${event.what}"
+                                 data-why="${event.why}"
+                                 data-possible="${event.possible}"
+                                 data-future="${event.future || false}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Add NOW line
+            const nowYear = 2026;
+            const nowOffset = nowYear - startYear;
+            const nowDecadeIndex = Math.floor(nowOffset / 10);
+            const nowYearInDecade = (nowOffset % 10) / 10;
+            const nowLeftPercent = (nowDecadeIndex + nowYearInDecade) * decadeWidth;
+
+            const nowLine = document.getElementById('gantt-now-line');
+            nowLine.style.display = 'block';
+            nowLine.style.left = `calc(280px + ${nowLeftPercent}% * (100% - 280px) / 100 + ${nowLeftPercent}%)`;
+
+            // Tooltip handling
+            const tooltip = document.getElementById('gantt-tooltip');
+            const bars = document.querySelectorAll('.gantt-bar');
+
+            bars.forEach(bar => {
+                bar.addEventListener('mouseenter', (e) => {
+                    const rect = bar.getBoundingClientRect();
+                    const category = bar.dataset.category;
+                    const categoryLabels = {
+                        civilization: 'Civilization',
+                        science: 'Science',
+                        industry: 'Industry',
+                        governance: 'Governance'
+                    };
+
+                    document.getElementById('tooltip-category').textContent = categoryLabels[category];
+                    document.getElementById('tooltip-category').className = `category-tag category-${category}`;
+                    document.getElementById('tooltip-title').textContent = `${bar.dataset.year} - ${bar.dataset.title}`;
+                    document.getElementById('tooltip-what').innerHTML = `<strong>What Changed:</strong> ${bar.dataset.what}`;
+                    document.getElementById('tooltip-why').innerHTML = `<strong>Why It Matters:</strong> ${bar.dataset.why}`;
+                    document.getElementById('tooltip-possible').innerHTML = `<strong>What Became Possible:</strong> ${bar.dataset.possible}`;
+
+                    tooltip.style.left = `${rect.right + 10}px`;
+                    tooltip.style.top = `${rect.top}px`;
+                    tooltip.classList.add('show');
+                });
+
+                bar.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('show');
+                });
+            });
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            loadEvents();
+            renderGanttChart();
         });
     </script>
 </body>
