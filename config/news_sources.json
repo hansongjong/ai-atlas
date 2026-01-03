@@ -1,0 +1,92 @@
+{
+  "sources": [
+    {
+      "name": "OpenAI Blog",
+      "url": "https://openai.com/blog/",
+      "rss": null,
+      "lang": "en",
+      "category": "Science",
+      "priority": "high"
+    },
+    {
+      "name": "Anthropic Blog",
+      "url": "https://www.anthropic.com/news",
+      "rss": null,
+      "lang": "en",
+      "category": "Science",
+      "priority": "high"
+    },
+    {
+      "name": "DeepMind Blog",
+      "url": "https://deepmind.google/discover/blog/",
+      "rss": null,
+      "lang": "en",
+      "category": "Science",
+      "priority": "high"
+    },
+    {
+      "name": "MIT Technology Review - AI",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/",
+      "rss": "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+      "lang": "en",
+      "category": "Civilization",
+      "priority": "high"
+    },
+    {
+      "name": "The Verge - AI",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "rss": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
+      "lang": "en",
+      "category": "Industry",
+      "priority": "medium"
+    },
+    {
+      "name": "Wired - AI",
+      "url": "https://www.wired.com/tag/artificial-intelligence/",
+      "rss": null,
+      "lang": "en",
+      "category": "Civilization",
+      "priority": "medium"
+    },
+    {
+      "name": "AI News",
+      "url": "https://www.artificialintelligence-news.com/",
+      "rss": "https://www.artificialintelligence-news.com/feed/",
+      "lang": "en",
+      "category": "Industry",
+      "priority": "medium"
+    },
+    {
+      "name": "IEEE Spectrum - AI",
+      "url": "https://spectrum.ieee.org/topic/artificial-intelligence/",
+      "rss": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
+      "lang": "en",
+      "category": "Science",
+      "priority": "high"
+    },
+    {
+      "name": "AI 타임스",
+      "url": "https://www.aitimes.kr/",
+      "rss": "https://www.aitimes.kr/rss/allArticle.xml",
+      "lang": "ko",
+      "category": "Industry",
+      "priority": "medium"
+    },
+    {
+      "name": "Government AI Watch",
+      "url": "https://www.govtech.com/artificial-intelligence",
+      "rss": null,
+      "lang": "en",
+      "category": "Governance",
+      "priority": "high"
+    }
+  ],
+  "categories": {
+    "Civilization": "문명적 관점 - AI as historical event",
+    "Science": "과학적 관점 - hardware & software evolution",
+    "Industry": "산업/경제적 관점 - governance, labor, production",
+    "Governance": "거버넌스 관점 - policy, regulation, control"
+  },
+  "update_frequency": "daily",
+  "last_updated": "2026-01-03"
+}
