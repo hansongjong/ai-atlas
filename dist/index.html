@@ -1459,7 +1459,7 @@
 
             container.innerHTML = html;
 
-            // Add NOW line
+            // Add NOW line - positioned within the timeline area (after 280px label column)
             const nowYear = 2026;
             const nowOffset = nowYear - startYear;
             const nowDecadeIndex = Math.floor(nowOffset / 10);
@@ -1468,7 +1468,8 @@
 
             const nowLine = document.getElementById('gantt-now-line');
             nowLine.style.display = 'block';
-            nowLine.style.left = `calc(280px + ${nowLeftPercent}% * (100% - 280px) / 100 + ${nowLeftPercent}%)`;
+            // 280px는 라벨 영역, 나머지가 타임라인 영역이므로 calc로 정확히 계산
+            nowLine.style.left = `calc(280px + (100% - 280px) * ${nowLeftPercent} / 100)`;
 
             // Tooltip handling
             const tooltip = document.getElementById('gantt-tooltip');
